@@ -1,0 +1,32 @@
+{
+  "name": "barber-api",
+  "version": "1.0.0",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/mavbraz/barberapi.git"
+  },
+  "author": "Matheus Braz",
+  "contributors": [
+    "Matheus Braz <mavbraz@gmail.com>",
+    "Miguel Duarte <miguelduarte42@gmail.com>"
+  ],
+  "description": "Barber API",
+  "keywords": [],
+  "license": "UNLICENSED",
+  "main": "app",
+  "dependencies": {
+    "crypto": "^1.0.1",
+    "express": "^4.16.3",
+    "jsonwebtoken": "^8.2.1",
+    "mysql": "^2.15.0",
+    "swagger-tools": "^0.10.3",
+    "yamljs": "^0.3.0"
+  },
+  "engines": {
+    "node": "8.5.0"
+  },
+  "scripts": {
+    "start": "node app"
+  }
+}
