@@ -8,7 +8,8 @@ module.exports = {
   registerPost: registerPost,
   loginPost: loginPost,
   usuarioIdPut: usuarioIdPut,
-  usuarioIdDelete: usuarioIdDelete
+  usuarioIdDelete: usuarioIdDelete,
+  usuarioIdUnlockPut: usuarioIdUnlockPut
 }
 
 function registerPost(req, res, next) {
@@ -81,6 +82,22 @@ function usuarioIdDelete(req, res, next) {
     if (!(result instanceof Error)) {
       if (result.affectedRows > 0) {
         return response.sendSuccess(res, { message: "User deleted" });
+      } else {
+        return response.sendDefaultError(res, { message: "User not found" });
+      }
+    } else {
+      return response.sendDefaultError(res, { message: result.message });
+    }
+  });
+}
+
+function usuarioIdUnlockPut(req, res, next) {
+  const id = req.swagger.params['id'].value;
+
+  db.desbloquearUsuario(id, function(result) {
+    if (!(result instanceof Error)) {
+      if (result.affectedRows > 0) {
+        return response.sendSuccess(res, { message: "User unlocked" });
       } else {
         return response.sendDefaultError(res, { message: "User not found" });
       }

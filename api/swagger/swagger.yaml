@@ -30,6 +30,11 @@ consumes:
   - multipart/form-data
 produces:
   - application/json
+tags:
+  - name: Usuário
+    description: "Tudo sobre o usuário"
+  - name: Serviço
+    description: "Tudo sobre o serviço"
 paths:
   /usuario/registrar:
     x-swagger-router-controller: usuario.controller
@@ -40,6 +45,8 @@ paths:
         - Bearer: []
       x-security-scopes:
         - funcionario
+      tags:
+        - Usuário
       parameters:
         - name: user
           in: body
@@ -64,6 +71,8 @@ paths:
     post:
       operationId: loginPost
       description: "Loga com um usuário"
+      tags:
+        - Usuário
       parameters:
         - name: authentication
           in: body
@@ -92,6 +101,8 @@ paths:
         - Bearer: []
       x-security-scopes:
         - funcionario
+      tags:
+        - Usuário
       parameters:
         - in: path
           name: id
@@ -123,6 +134,38 @@ paths:
         - Bearer: []
       x-security-scopes:
         - funcionario
+      tags:
+        - Usuário
+      parameters:
+        - in: path
+          name: id
+          type: integer
+          required: true
+          description: "Id do usuário"
+      responses:
+        "200":
+          description: "Success"
+          schema:
+            $ref: "#/definitions/Success"
+        "400":
+          description: "Default Error"
+          schema:
+            $ref: "#/definitions/Error"
+        "403":
+          description: "Access Denied"
+          schema:
+            $ref: "#/definitions/Error"
+  /usuario/{id}/unlock:
+    x-swagger-router-controller: usuario.controller
+    put:
+      operationId: usuarioIdUnlockPut
+      description: "Desbloqueia um usuário"
+      security:
+        - Bearer: []
+      x-security-scopes:
+        - funcionario
+      tags:
+        - Usuário
       parameters:
         - in: path
           name: id
@@ -152,6 +195,8 @@ paths:
       x-security-scopes:
         - funcionario
         - cliente
+      tags:
+        - Serviço
       responses:
         "200":
           description: "Success"
@@ -172,6 +217,8 @@ paths:
         - Bearer: []
       x-security-scopes:
         - funcionario
+      tags:
+        - Serviço
       parameters:
         - name: service
           in: body
@@ -201,6 +248,8 @@ paths:
       x-security-scopes:
         - funcionario
         - cliente
+      tags:
+        - Serviço
       parameters:
         - in: path
           name: id
@@ -227,6 +276,8 @@ paths:
         - Bearer: []
       x-security-scopes:
         - funcionario
+      tags:
+        - Serviço
       parameters:
         - in: path
           name: id
@@ -258,6 +309,8 @@ paths:
         - Bearer: []
       x-security-scopes:
         - funcionario
+      tags:
+        - Serviço
       parameters:
         - in: path
           name: id

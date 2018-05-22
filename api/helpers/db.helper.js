@@ -9,6 +9,7 @@ module.exports = {
 	loginUsuario: loginUsuario,
 	atualizarUsuario: atualizarUsuario,
 	removerUsuario: removerUsuario,
+	desbloquearUsuario: desbloquearUsuario,
 
 	// Service methods
 	visualizarServicos: visualizarServicos,
@@ -76,6 +77,18 @@ function atualizarUsuario(user, callback) {
 function removerUsuario(id, callback) {
 	const con = createConnection();
 	con.query('UPDATE usuario SET blocked = TRUE WHERE id = ? AND blocked = FALSE', [id], (err, res) => {
+		if(err) {
+	  		callback(err);
+	  	} else {
+	  		callback(res);
+		}
+	});
+	endConnection(con);
+}
+
+function desbloquearUsuario(id, callback) {
+	const con = createConnection();
+	con.query('UPDATE usuario SET blocked = FALSE WHERE id = ? AND blocked = TRUE', [id], (err, res) => {
 		if(err) {
 	  		callback(err);
 	  	} else {
