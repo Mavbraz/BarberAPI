@@ -7,20 +7,18 @@ module.exports = {
   registerPost: registerPost
 }
 
-function registerPost(args, res, next) {
-  const email = args.body.email;
-  const password = args.body.senha;
-  const cargo = args.body.cargo;
+function registerPost(req, res, next) {
+  const registration = req.swagger.params['registration'].value;
 
-  if (email === undefined || password === undefined || cargo === undefined) {
+  if (registration.email === undefined || registration.senha === undefined || registration.cargo === undefined) {
     return response.sendDefaultError(res, { message: "Error: 'email', 'senha' and 'cargo' are required" });
   }
 
-  if (cargo.toUpperCase() != "FUNCIONARIO" && cargo.toUpperCase() != "CLIENTE") {
+  if (registration.cargo.toUpperCase() != "FUNCIONARIO" && registration.cargo.toUpperCase() != "CLIENTE") {
     return response.sendDefaultError(res, { message: "Error: 'cargo' needs be either 'FUNCIONARIO' and 'CLIENTE'" });
   }
 
-  db.registrar(email, password, cargo, function(result) {
+  db.registrarUsuario(registration, function(result) {
     if (!(result instanceof Error)) {
       return response.sendSuccess(res, { message: "User registered." });
     } else {

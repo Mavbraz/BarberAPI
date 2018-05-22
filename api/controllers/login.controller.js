@@ -7,15 +7,14 @@ module.exports = {
   loginPost: loginPost
 };
 
-function loginPost(args, res, next) {
-  const email = args.body.email;
-  const password = args.body.senha;
+function loginPost(req, res, next) {
+  const authentication = req.swagger.params['authentication'].value;
 
-  if (email === undefined || password === undefined) {
+  if (authentication.email === undefined || authentication.senha === undefined) {
     return response.sendDefaultError(res, { message: "Error: 'email' and 'senha' are required" });
   }
 
-  auth.issueToken(email, password, function(result) {
+  auth.issueToken(authentication, function(result) {
     if (!(result instanceof Error)) {
     	return response.sendSuccess(res, { token: result });
     } else {

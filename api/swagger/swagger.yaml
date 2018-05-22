@@ -33,7 +33,7 @@ paths:
     x-swagger-router-controller: register.controller
     post:
       operationId: registerPost
-      description: "Register User"
+      description: "Registra um usuário"
       security:
         - Bearer: []
       x-security-scopes:
@@ -61,13 +61,36 @@ paths:
     x-swagger-router-controller: login.controller
     post:
       operationId: loginPost
-      description: "Login"
+      description: "Loga com um usuário"
       parameters:
         - name: authentication
           in: body
           required: true
           schema:
             $ref: "#/definitions/Authentication"
+      responses:
+        "200":
+          description: "Success"
+          schema:
+            $ref: "#/definitions/Token"
+        "400":
+          description: "Default Error"
+          schema:
+            $ref: "#/definitions/Error"
+        "403":
+          description: "Access Denied"
+          schema:
+            $ref: "#/definitions/Error"
+  /servico:
+    x-swagger-router-controller: servico.controller
+    get:
+      operationId: servicoGet
+      description: "Visualiza todos os serviços"
+      security:
+        - Bearer: []
+      x-security-scopes:
+        - funcionario
+        - cliente
       responses:
         "200":
           description: "Success"

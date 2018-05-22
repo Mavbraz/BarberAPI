@@ -4,10 +4,11 @@ const mysql = require('mysql');
 const crypto = require('crypto');
 
 module.exports = {
-	registrar: registrar,
+	registrarUsuario: registrarUsuario,
+	loginUsuario: loginUsuario,
+	visualizarServicos: visualizarServicos,
 	saveToken: saveToken,
 	verifyToken: verifyToken,
-	login: login
 }
 
 function createConnection() {
@@ -23,10 +24,10 @@ function endConnection(con) {
 	con.end();
 }
 
-function registrar(email, password, cargo, callback) {
+function registrarUsuario(registration, callback) {
 	const con = createConnection();
-	const user = { email: email, senha: password, salt: crypto.randomBytes(48).toString('hex'), cargo: cargo };
-	con.query('INSERT INTO user SET ?', user, (err, res) => {
+	const user = { email: registration.email, senha: registration.senha, salt: crypto.randomBytes(48).toString('hex'), cargo: registration.cargo };
+	con.query('INSERT INTO usuario SET ?', user, (err, res) => {
 		if(err) {
 	  		callback(err);
 	  	} else {
@@ -36,9 +37,37 @@ function registrar(email, password, cargo, callback) {
 	endConnection(con);
 }
 
-function saveToken(email, token, callback) {
+function loginUsuario(authentication, callback) {
 	const con = createConnection();
-	con.query('UPDATE user SET token = ? WHERE email = ?', [token, email], (err, res) => {
+	con.query('SELECT email, senha, salt, cargo, token FROM usuario WHERE email = ?', authentication.email, (err, res) => {
+	  if(err)  {
+	  	callback(err);
+	  } else {
+	  	if (res.length > 0) {
+			callback(res[0]);
+		} else {
+			callback(new Error("Error: Credentials incorrect"));
+		}
+	  }
+	});
+	endConnection(con);
+}
+
+function visualizarServicos(callback) {
+	const con = createConnection();
+	con.query('SELECT id, descricao FROM servico', [], (err, res) => {
+	  if(err)  {
+	  	callback(err);
+	  } else {
+		callback(res);
+	  }
+	});
+	endConnection(con);
+}
+
+function saveToken(authentication, token, callback) {
+	const con = createConnection();
+	con.query('UPDATE usuario SET token = ? WHERE email = ?', [token, authentication.email], (err, res) => {
 	 	if(err)  {
 	  		callback(err);
 	 	} else {
@@ -50,7 +79,7 @@ function saveToken(email, token, callback) {
 
 function verifyToken(token, callback) {
 	const con = createConnection();
-	con.query('SELECT email, salt, cargo FROM user WHERE token = ?', token, (err, res) => {
+	con.query('SELECT email, salt, cargo FROM usuario WHERE token = ?', token, (err, res) => {
 	  if(err) {
 	  	callback(null);
 	  } else {
@@ -58,22 +87,6 @@ function verifyToken(token, callback) {
 			callback(res[0]);
 		} else {
 			callback(null);
-		}
-	  }
-	});
-	endConnection(con);
-}
-
-function login(email, password, callback) {
-	const con = createConnection();
-	con.query('SELECT email, senha, salt, cargo, token FROM user WHERE email = ?', email, (err, res) => {
-	  if(err)  {
-	  	callback(err);
-	  } else {
-	  	if (res.length > 0) {
-			callback(res[0]);
-		} else {
-			callback(new Error("Error: Credentials incorrect"));
 		}
 	  }
 	});

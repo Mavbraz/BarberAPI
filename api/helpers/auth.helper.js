@@ -65,9 +65,9 @@ function verifyToken(req, authOrSecDef, token, callback) {
   }
 };
 
-function issueToken(email, password, callback) {
-  db.login(email, password, function(result_login) {
-    if (!(result_login instanceof Error) && result_login.email === email.toLowerCase() && result_login.senha === password.toUpperCase()) {
+function issueToken(authentication, callback) {
+  db.loginUsuario(authentication, function(result_login) {
+    if (!(result_login instanceof Error) && result_login.email === authentication.email.toLowerCase() && result_login.senha === authentication.senha.toUpperCase()) {
       const token = jwt.sign(
         {
           sub: result_login.email,
@@ -77,7 +77,7 @@ function issueToken(email, password, callback) {
         result_login.salt
       );
 
-      db.saveToken(email, token, function(result_token) {
+      db.saveToken(authentication, token, function(result_token) {
         if (!(result_token instanceof Error)) {
           return callback(token);
         } else {
