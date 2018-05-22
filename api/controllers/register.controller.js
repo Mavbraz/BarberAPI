@@ -16,7 +16,7 @@ function registerPost(args, res, next) {
     return response.sendDefaultError(res, { message: "Error: 'email', 'senha' and 'cargo' are required" });
   }
 
-  if (!args.swagger.operation["x-security-scopes"].includes(cargo.toLowerCase())) {
+  if (cargo.toUpperCase() != "FUNCIONARIO" && cargo.toUpperCase() != "CLIENTE") {
     return response.sendDefaultError(res, { message: "Error: 'cargo' needs be either 'FUNCIONARIO' and 'CLIENTE'" });
   }
 

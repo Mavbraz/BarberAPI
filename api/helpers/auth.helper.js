@@ -85,7 +85,7 @@ function issueToken(email, password, callback) {
         }
       })
     } else {
-      return callback(result_login);
+      return callback(new Error("Error: Credentials incorrect"));
     }
   });
 };

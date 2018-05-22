@@ -32,7 +32,7 @@ paths:
   /register:
     x-swagger-router-controller: register.controller
     post:
-      operationId: registerUser
+      operationId: registerPost
       description: "Register User"
       security:
         - Bearer: []

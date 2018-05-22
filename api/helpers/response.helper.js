@@ -2,12 +2,13 @@
 
 module.exports = {
 	sendResponse: sendResponse,
+	sendSuccess: sendSuccess,
 	sendDefaultError: sendDefaultError,
 	sendAcessDenied: sendAcessDenied
 }
 
 function sendResponse(res, code, message) {
-    return res.status(code).json(responseObject);
+    return res.status(code).json(message);
 }
 
 function sendSuccess(res, message) {
