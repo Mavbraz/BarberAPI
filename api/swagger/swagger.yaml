@@ -97,7 +97,7 @@ paths:
         "200":
           description: "Success"
           schema:
-            $ref: "#/definitions/Token"
+            $ref: "#/definitions/AllServices"
         "400":
           description: "Default Error"
           schema:
@@ -119,6 +119,92 @@ paths:
           required: true
           schema:
             $ref: "#/definitions/Service"
+      responses:
+        "200":
+          description: "Success"
+          schema:
+            $ref: "#/definitions/Success"
+        "400":
+          description: "Default Error"
+          schema:
+            $ref: "#/definitions/Error"
+        "403":
+          description: "Access Denied"
+          schema:
+            $ref: "#/definitions/Error"
+  /servico/{id}:
+    x-swagger-router-controller: servico.controller
+    get:
+      operationId: servicoIdGet
+      description: "Visualiza informações de um serviço"
+      security:
+        - Bearer: []
+      x-security-scopes:
+        - funcionario
+        - cliente
+      parameters:
+        - in: path
+          name: id
+          type: integer
+          required: true
+          description: "Id do serviço"
+      responses:
+        "200":
+          description: "Success"
+          schema:
+            $ref: "#/definitions/Service"
+        "400":
+          description: "Default Error"
+          schema:
+            $ref: "#/definitions/Error"
+        "403":
+          description: "Access Denied"
+          schema:
+            $ref: "#/definitions/Error"
+    put:
+      operationId: servicoIdPut
+      description: "Atualiza informações de um serviço"
+      security:
+        - Bearer: []
+      x-security-scopes:
+        - funcionario
+      parameters:
+        - in: path
+          name: id
+          type: integer
+          required: true
+          description: "Id do serviço"
+        - name: service
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/Service"
+      responses:
+        "200":
+          description: "Success"
+          schema:
+            $ref: "#/definitions/Success"
+        "400":
+          description: "Default Error"
+          schema:
+            $ref: "#/definitions/Error"
+        "403":
+          description: "Access Denied"
+          schema:
+            $ref: "#/definitions/Error"
+    delete:
+      operationId: servicoIdDelete
+      description: "Remove um serviço"
+      security:
+        - Bearer: []
+      x-security-scopes:
+        - funcionario
+      parameters:
+        - in: path
+          name: id
+          type: integer
+          required: true
+          description: "Id do serviço"
       responses:
         "200":
           description: "Success"
@@ -156,6 +242,16 @@ definitions:
       cargo:
         type: string
         example: "FUNCIONARIO"
+  AllServices:
+    type: object
+    properties:
+      total:
+        type: integer
+        example: 1
+      servicos:
+        type: array
+        items:
+          $ref: '#/definitions/Service'
   Service:
     type: object
     properties:

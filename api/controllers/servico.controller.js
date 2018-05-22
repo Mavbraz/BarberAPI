@@ -5,7 +5,10 @@ const response = require("../helpers/response.helper");
 
 module.exports = {
   servicoGet: servicoGet,
-  servicoPost: servicoPost
+  servicoPost: servicoPost,
+  servicoIdGet: servicoIdGet,
+  servicoIdPut: servicoIdPut,
+  servicoIdDelete: servicoIdDelete
 }
 
 function servicoGet(req, res, next) {
@@ -33,7 +36,63 @@ function servicoPost(req, res, next) {
 
   db.criarServico(service, function(result) {
     if (!(result instanceof Error)) {
-      return response.sendSuccess(res, { message: "Serviço registered" });
+      return response.sendSuccess(res, { message: "Service registered" });
+    } else {
+      return response.sendDefaultError(res, { message: result.message });
+    }
+  });
+}
+
+function servicoIdGet(req, res, next) {
+  const id = req.swagger.params['id'].value;
+
+  db.visualizarServico(id, function(result) {
+    if (!(result instanceof Error)) {
+      return response.sendSuccess(res, result);
+    } else {
+      return response.sendDefaultError(res, { message: result.message });
+    }
+  });
+}
+
+function servicoIdPut(req, res, next) {
+  const id = req.swagger.params['id'].value;
+  var service = req.swagger.params['service'].value;
+
+  if (service.descricao === undefined || service.valor === undefined) {
+    return response.sendDefaultError(res, { message: "Error: 'decricao' and 'valor' are required" });
+  }
+
+  if (!/^\d+(?:\.\d+)?$/.test(service.valor)) {
+  	return response.sendDefaultError(res, { message: "Error: 'valor' is not a currency" });
+  }
+
+  service.id = id;
+  service.valor = parseFloat(service.valor).toFixed(2);
+
+  db.atualizarServico(service, function(result) {
+    if (!(result instanceof Error)) {
+      if (result.affectedRows > 0) {
+      	return response.sendSuccess(res, { message: "Service updated" });
+  	  } else {
+  	  	return response.sendDefaultError(res, { message: "Service not found" });
+  	  }
+    } else {
+      return response.sendDefaultError(res, { message: result.message });
+    }
+  });
+}
+
+function servicoIdDelete(req, res, next) {
+  const id = req.swagger.params['id'].value;
+
+  db.removerServico(id, function(result) {
+    if (!(result instanceof Error)) {
+      if (result.affectedRows > 0) {
+        return response.sendSuccess(res, { message: "Service deleted" });
+  	  } else {
+  	  	return response.sendDefaultError(res, { message: "Service not found" });
+  	  }
     } else {
       return response.sendDefaultError(res, { message: result.message });
     }

@@ -8,6 +8,9 @@ module.exports = {
 	loginUsuario: loginUsuario,
 	visualizarServicos: visualizarServicos,
 	criarServico: criarServico,
+	visualizarServico: visualizarServico,
+	atualizarServico: atualizarServico,
+	removerServico: removerServico,
 	saveToken: saveToken,
 	verifyToken: verifyToken,
 }
@@ -68,7 +71,47 @@ function visualizarServicos(callback) {
 
 function criarServico(service, callback) {
 	const con = createConnection();
-	con.query('INSERT INTO servico set ?', { descricao: service.descricao, valor: service.valor }, (err, res) => {
+	con.query('INSERT INTO servico SET ?', { descricao: service.descricao, valor: service.valor }, (err, res) => {
+		if(err) {
+	  		callback(err);
+	  	} else {
+	  		callback(res);
+		}
+	});
+	endConnection(con);
+}
+
+function visualizarServico(id, callback) {
+	const con = createConnection();
+	con.query('SELECT id, descricao, valor FROM servico WHERE id = ?', [id], (err, res) => {
+	  if(err)  {
+	  	callback(err);
+	  } else {
+		if (res.length > 0) {
+			callback(res[0]);
+		} else {
+			callback(new Error("Error: Service not found"));
+		}
+	  }
+	});
+	endConnection(con);
+}
+
+function atualizarServico(service, callback) {
+	const con = createConnection();
+	con.query('UPDATE servico SET ? WHERE id = ?', [{ descricao: service.descricao, valor: service.valor }, service.id], (err, res) => {
+		if(err) {
+	  		callback(err);
+	  	} else {
+	  		callback(res);
+		}
+	});
+	endConnection(con);
+}
+
+function removerServico(id, callback) {
+	const con = createConnection();
+	con.query('DELETE FROM servico WHERE id = ?', [id], (err, res) => {
 		if(err) {
 	  		callback(err);
 	  	} else {
