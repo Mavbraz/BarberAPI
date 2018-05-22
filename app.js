@@ -18,12 +18,12 @@ swaggerTools.initializeMiddleware(swaggerConfig, function(middleware) {
     })
   );
   
-  const routerConfig = {
+  //app.use(middleware.swaggerValidator());
+
+  app.use(middleware.swaggerRouter({
     controllers: "./api/controllers",
     useStubs: false
-  };
-
-  app.use(middleware.swaggerRouter(routerConfig));
+  }));
 
   app.use(middleware.swaggerUi());
   

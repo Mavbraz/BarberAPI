@@ -7,6 +7,7 @@ module.exports = {
 	registrarUsuario: registrarUsuario,
 	loginUsuario: loginUsuario,
 	visualizarServicos: visualizarServicos,
+	criarServico: criarServico,
 	saveToken: saveToken,
 	verifyToken: verifyToken,
 }
@@ -55,12 +56,24 @@ function loginUsuario(authentication, callback) {
 
 function visualizarServicos(callback) {
 	const con = createConnection();
-	con.query('SELECT id, descricao FROM servico', [], (err, res) => {
+	con.query('SELECT id, descricao, valor FROM servico', [], (err, res) => {
 	  if(err)  {
 	  	callback(err);
 	  } else {
 		callback(res);
 	  }
+	});
+	endConnection(con);
+}
+
+function criarServico(service, callback) {
+	const con = createConnection();
+	con.query('INSERT INTO servico set ?', { descricao: service.descricao, valor: service.valor }, (err, res) => {
+		if(err) {
+	  		callback(err);
+	  	} else {
+	  		callback(res);
+		}
 	});
 	endConnection(con);
 }

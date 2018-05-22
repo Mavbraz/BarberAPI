@@ -26,11 +26,13 @@ securityDefinitions:
          Bearer xxxxxx.yyyyyyy.zzzzzz
 consumes:
   - application/json
+  - application/x-www-form-urlencoded
+  - multipart/form-data
 produces:
   - application/json
 paths:
-  /register:
-    x-swagger-router-controller: register.controller
+  /usuario/registrar:
+    x-swagger-router-controller: usuario.controller
     post:
       operationId: registerPost
       description: "Registra um usuário"
@@ -57,8 +59,8 @@ paths:
           description: "Access Denied"
           schema:
             $ref: "#/definitions/Error"
-  /login:
-    x-swagger-router-controller: login.controller
+  /usuario/login:
+    x-swagger-router-controller: usuario.controller
     post:
       operationId: loginPost
       description: "Loga com um usuário"
@@ -104,28 +106,65 @@ paths:
           description: "Access Denied"
           schema:
             $ref: "#/definitions/Error"
+    post:
+      operationId: servicoPost
+      description: "Cria um serviço"
+      security:
+        - Bearer: []
+      x-security-scopes:
+        - funcionario
+      parameters:
+        - name: service
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/Service"
+      responses:
+        "200":
+          description: "Success"
+          schema:
+            $ref: "#/definitions/Success"
+        "400":
+          description: "Default Error"
+          schema:
+            $ref: "#/definitions/Error"
+        "403":
+          description: "Access Denied"
+          schema:
+            $ref: "#/definitions/Error"
 definitions:
   Authentication:
     type: object
     properties:
-      username:
+      email:
         type: string
+        format: email
         example: "email"
-      password:
+      senha:
         type: string
         example: "password"
   Registration:
     type: object
     properties:
-      username:
+      email:
         type: string
+        format: email
         example: "email"
-      password:
+      senha:
         type: string
         example: "password"
       cargo:
         type: string
         example: "FUNCIONARIO"
+  Service:
+    type: object
+    properties:
+      descricao:
+        type: string
+        example: "Corte de Cabelo"
+      valor:
+        type: number
+        format: float
   Token:
     type: object
     properties:
