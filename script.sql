@@ -10,6 +10,7 @@ CREATE TABLE usuario (
     salt  CHAR(96) NOT NULL,
     cargo VARCHAR(30) NOT NULL,
     token VARCHAR(255),
+    blocked BIT NOT NULL DEFAULT 0,
     PRIMARY KEY (id),
     CHECK (cargo = 'FUNCIONARIO' OR cargo = 'CLIENTE')
 );
@@ -18,6 +19,7 @@ CREATE TABLE servico (
     id INT NOT NULL AUTO_INCREMENT,
     descricao VARCHAR(255) NOT NULL,
     valor DECIMAL(15,2) NOT NULL,
+    blocked BIT NOT NULL DEFAULT 0,
     PRIMARY KEY(id)
 );
 

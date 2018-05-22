@@ -4,8 +4,13 @@ const mysql = require('mysql');
 const crypto = require('crypto');
 
 module.exports = {
+	// User methods
 	registrarUsuario: registrarUsuario,
 	loginUsuario: loginUsuario,
+	atualizarUsuario: atualizarUsuario,
+	removerUsuario: removerUsuario,
+
+	// Service methods
 	visualizarServicos: visualizarServicos,
 	criarServico: criarServico,
 	visualizarServico: visualizarServico,
@@ -28,10 +33,9 @@ function endConnection(con) {
 	con.end();
 }
 
-function registrarUsuario(registration, callback) {
+function registrarUsuario(user, callback) {
 	const con = createConnection();
-	const user = { email: registration.email, senha: registration.senha, salt: crypto.randomBytes(48).toString('hex'), cargo: registration.cargo };
-	con.query('INSERT INTO usuario SET ?', user, (err, res) => {
+	con.query('INSERT INTO usuario SET ?', { email: user.email, senha: user.senha, salt: crypto.randomBytes(48).toString('hex'), cargo: user.cargo }, (err, res) => {
 		if(err) {
 	  		callback(err);
 	  	} else {
@@ -43,7 +47,7 @@ function registrarUsuario(registration, callback) {
 
 function loginUsuario(authentication, callback) {
 	const con = createConnection();
-	con.query('SELECT email, senha, salt, cargo, token FROM usuario WHERE email = ?', authentication.email, (err, res) => {
+	con.query('SELECT email, senha, salt, cargo, token FROM usuario WHERE email = ? AND blocked = 0', authentication.email, (err, res) => {
 	  if(err)  {
 	  	callback(err);
 	  } else {
@@ -57,9 +61,33 @@ function loginUsuario(authentication, callback) {
 	endConnection(con);
 }
 
+function atualizarUsuario(user, callback) {
+	const con = createConnection();
+	con.query('UPDATE usuario SET ? WHERE id = ? WHERE blocked = 0', [{ email: user.email, senha: user.senha, cargo: user.cargo }, user.id], (err, res) => {
+		if(err) {
+	  		callback(err);
+	  	} else {
+	  		callback(res);
+		}
+	});
+	endConnection(con);
+}
+
+function removerUsuario(id, callback) {
+	const con = createConnection();
+	con.query('UPDATE usuario SET blocked = 1 WHERE id = ? AND blocked = 0', [id], (err, res) => {
+		if(err) {
+	  		callback(err);
+	  	} else {
+	  		callback(res);
+		}
+	});
+	endConnection(con);
+}
+
 function visualizarServicos(callback) {
 	const con = createConnection();
-	con.query('SELECT id, descricao, valor FROM servico', [], (err, res) => {
+	con.query('SELECT id, descricao, valor FROM servico WHERE blocked = 0', [], (err, res) => {
 	  if(err)  {
 	  	callback(err);
 	  } else {
@@ -83,7 +111,7 @@ function criarServico(service, callback) {
 
 function visualizarServico(id, callback) {
 	const con = createConnection();
-	con.query('SELECT id, descricao, valor FROM servico WHERE id = ?', [id], (err, res) => {
+	con.query('SELECT id, descricao, valor FROM servico WHERE id = ? AND blocked = 0', [id], (err, res) => {
 	  if(err)  {
 	  	callback(err);
 	  } else {
@@ -99,7 +127,7 @@ function visualizarServico(id, callback) {
 
 function atualizarServico(service, callback) {
 	const con = createConnection();
-	con.query('UPDATE servico SET ? WHERE id = ?', [{ descricao: service.descricao, valor: service.valor }, service.id], (err, res) => {
+	con.query('UPDATE servico SET ? WHERE id = ? AND blocked = 0', [{ descricao: service.descricao, valor: service.valor }, service.id], (err, res) => {
 		if(err) {
 	  		callback(err);
 	  	} else {
@@ -111,7 +139,7 @@ function atualizarServico(service, callback) {
 
 function removerServico(id, callback) {
 	const con = createConnection();
-	con.query('DELETE FROM servico WHERE id = ?', [id], (err, res) => {
+	con.query('UPDATE servico SET blocked = 1 WHERE id = ? AND blocked = 0', [id], (err, res) => {
 		if(err) {
 	  		callback(err);
 	  	} else {
@@ -123,7 +151,7 @@ function removerServico(id, callback) {
 
 function saveToken(authentication, token, callback) {
 	const con = createConnection();
-	con.query('UPDATE usuario SET token = ? WHERE email = ?', [token, authentication.email], (err, res) => {
+	con.query('UPDATE usuario SET token = ? WHERE email = ? AND blocked = 0', [token, authentication.email], (err, res) => {
 	 	if(err)  {
 	  		callback(err);
 	 	} else {
@@ -135,7 +163,7 @@ function saveToken(authentication, token, callback) {
 
 function verifyToken(token, callback) {
 	const con = createConnection();
-	con.query('SELECT email, salt, cargo FROM usuario WHERE token = ?', token, (err, res) => {
+	con.query('SELECT email, salt, cargo FROM usuario WHERE token = ? AND blocked = 0', token, (err, res) => {
 	  if(err) {
 	  	callback(null);
 	  } else {

@@ -26,7 +26,7 @@ function verifyToken(req, authOrSecDef, token, callback) {
     const tokenJwt = token.split(" ")[1];
 
     db.verifyToken(tokenJwt, function (result) {
-      if (result) {
+      if (result != null) {
         jwt.verify(tokenJwt, result.salt, function(verificationError, decodedToken) {
           //check if the JWT was verified correctly
           if (verificationError === null &&
@@ -85,7 +85,7 @@ function issueToken(authentication, callback) {
         }
       })
     } else {
-      return callback(new Error("Error: Credentials incorrect"));
+      return callback(new Error("Error: Credentials incorrect or account blocked"));
     }
   });
 };

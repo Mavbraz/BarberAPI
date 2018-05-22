@@ -41,11 +41,11 @@ paths:
       x-security-scopes:
         - funcionario
       parameters:
-        - name: registration
+        - name: user
           in: body
           required: true
           schema:
-            $ref: "#/definitions/Registration"
+            $ref: "#/definitions/User"
       responses:
         "200":
           description: "Success"
@@ -75,6 +75,65 @@ paths:
           description: "Success"
           schema:
             $ref: "#/definitions/Token"
+        "400":
+          description: "Default Error"
+          schema:
+            $ref: "#/definitions/Error"
+        "403":
+          description: "Access Denied"
+          schema:
+            $ref: "#/definitions/Error"
+  /usuario/{id}:
+    x-swagger-router-controller: usuario.controller
+    put:
+      operationId: usuarioIdPut
+      description: "Atualiza informações de um usuário"
+      security:
+        - Bearer: []
+      x-security-scopes:
+        - funcionario
+      parameters:
+        - in: path
+          name: id
+          type: integer
+          required: true
+          description: "Id do usuário"
+        - name: user
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/User"
+      responses:
+        "200":
+          description: "Success"
+          schema:
+            $ref: "#/definitions/Success"
+        "400":
+          description: "Default Error"
+          schema:
+            $ref: "#/definitions/Error"
+        "403":
+          description: "Access Denied"
+          schema:
+            $ref: "#/definitions/Error"
+    delete:
+      operationId: usuarioIdDelete
+      description: "Remove um usuário"
+      security:
+        - Bearer: []
+      x-security-scopes:
+        - funcionario
+      parameters:
+        - in: path
+          name: id
+          type: integer
+          required: true
+          description: "Id do usuário"
+      responses:
+        "200":
+          description: "Success"
+          schema:
+            $ref: "#/definitions/Success"
         "400":
           description: "Default Error"
           schema:
@@ -229,7 +288,7 @@ definitions:
       senha:
         type: string
         example: "password"
-  Registration:
+  User:
     type: object
     properties:
       email:
