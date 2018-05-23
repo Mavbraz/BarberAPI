@@ -17,6 +17,9 @@ module.exports = {
 	visualizarServico: visualizarServico,
 	atualizarServico: atualizarServico,
 	removerServico: removerServico,
+	desbloquearServico: desbloquearServico,
+
+	// Token methods
 	saveToken: saveToken,
 	verifyToken: verifyToken,
 }
@@ -153,6 +156,18 @@ function atualizarServico(service, callback) {
 function removerServico(id, callback) {
 	const con = createConnection();
 	con.query('UPDATE servico SET blocked = TRUE WHERE id = ? AND blocked = FALSE', [id], (err, res) => {
+		if(err) {
+	  		callback(err);
+	  	} else {
+	  		callback(res);
+		}
+	});
+	endConnection(con);
+}
+
+function desbloquearServico(id, callback) {
+	const con = createConnection();
+	con.query('UPDATE servico SET blocked = FALSE WHERE id = ? AND blocked = TRUE', [id], (err, res) => {
 		if(err) {
 	  		callback(err);
 	  	} else {

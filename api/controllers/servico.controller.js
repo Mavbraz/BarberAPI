@@ -8,7 +8,8 @@ module.exports = {
   servicoPost: servicoPost,
   servicoIdGet: servicoIdGet,
   servicoIdPut: servicoIdPut,
-  servicoIdDelete: servicoIdDelete
+  servicoIdDelete: servicoIdDelete,
+  servicoIdUnlockPut: servicoIdUnlockPut
 }
 
 function servicoGet(req, res, next) {
@@ -93,6 +94,22 @@ function servicoIdDelete(req, res, next) {
   	  } else {
   	  	return response.sendDefaultError(res, { message: "Service not found" });
   	  }
+    } else {
+      return response.sendDefaultError(res, { message: result.message });
+    }
+  });
+}
+
+function servicoIdUnlockPut(req, res, next) {
+  const id = req.swagger.params['id'].value;
+
+  db.desbloquearServico(id, function(result) {
+    if (!(result instanceof Error)) {
+      if (result.affectedRows > 0) {
+        return response.sendSuccess(res, { message: "Service unlocked" });
+      } else {
+        return response.sendDefaultError(res, { message: "Service not found" });
+      }
     } else {
       return response.sendDefaultError(res, { message: result.message });
     }
