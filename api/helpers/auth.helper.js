@@ -79,7 +79,7 @@ function issueToken(authentication, callback) {
 
       db.saveToken(authentication, token, function(result_token) {
         if (!(result_token instanceof Error)) {
-          return callback(token);
+          return callback({ token: token, cargo: result_login.cargo });
         } else {
           return callback(result_token);
         }

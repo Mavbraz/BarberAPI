@@ -83,7 +83,7 @@ paths:
         "200":
           description: "Success"
           schema:
-            $ref: "#/definitions/Token"
+            $ref: "#/definitions/Login"
         "400":
           description: "Default Error"
           schema:
@@ -403,10 +403,12 @@ definitions:
       valor:
         type: number
         format: float
-  Token:
+  Login:
     type: object
     properties:
       token:
+        type: string
+      cargo:
         type: string
   Success:
     type: object

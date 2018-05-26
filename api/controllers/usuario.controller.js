@@ -41,7 +41,7 @@ function loginPost(req, res, next) {
 
   auth.issueToken(authentication, function(result) {
     if (!(result instanceof Error)) {
-      return response.sendSuccess(res, { token: result });
+      return response.sendSuccess(res, { token: result.token, cargo: result.cargo });
     } else {
       return response.sendResponse(res, 403, { message: result.message });
     }
