@@ -36,11 +36,11 @@ tags:
   - name: Serviço
     description: "Tudo sobre o serviço"
 paths:
-  /usuario/registrar:
+  /usuario/registrar/funcionario:
     x-swagger-router-controller: usuario.controller
     post:
       operationId: registerPost
-      description: "Registra um usuário"
+      description: "Registra um funcionario"
       security:
         - Bearer: []
       x-security-scopes:
@@ -48,16 +48,42 @@ paths:
       tags:
         - Usuário
       parameters:
-        - name: user
+        - name: authentication
           in: body
           required: true
           schema:
-            $ref: "#/definitions/User"
+            $ref: "#/definitions/Authentication"
       responses:
         "200":
           description: "Success"
           schema:
-            $ref: "#/definitions/Success"
+            $ref: "#/definitions/Login"
+        "400":
+          description: "Default Error"
+          schema:
+            $ref: "#/definitions/Error"
+        "403":
+          description: "Access Denied"
+          schema:
+            $ref: "#/definitions/Error"
+  /usuario/registrar/cliente:
+    x-swagger-router-controller: usuario.controller
+    post:
+      operationId: registerPost
+      description: "Registra um cliente"
+      tags:
+        - Usuário
+      parameters:
+        - name: authentication
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/Authentication"
+      responses:
+        "200":
+          description: "Success"
+          schema:
+            $ref: "#/definitions/Login"
         "400":
           description: "Default Error"
           schema:

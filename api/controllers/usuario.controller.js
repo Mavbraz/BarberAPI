@@ -13,19 +13,32 @@ module.exports = {
 }
 
 function registerPost(req, res, next) {
-  const user = req.swagger.params['user'].value;
+  var authentication = req.swagger.params['authentication'].value;
 
-  if (user.email === undefined || user.senha === undefined || user.cargo === undefined) {
+  if (req.swagger.apiPath.endsWith("/cliente")) {
+    authentication.cargo = "CLIENTE";
+  } else if (req.swagger.apiPath.endsWith("/funcionario")) {
+    authentication.cargo = "FUNCIONARIO";
+  }
+
+  if (authentication.email === undefined || authentication.senha === undefined || authentication.cargo === undefined) {
     return response.sendDefaultError(res, { message: "Error: 'email', 'senha' and 'cargo' are required" });
   }
 
-  if (user.cargo.toUpperCase() != "FUNCIONARIO" && user.cargo.toUpperCase() != "CLIENTE") {
+  if (authentication.cargo.toUpperCase() != "FUNCIONARIO" && authentication.cargo.toUpperCase() != "CLIENTE") {
     return response.sendDefaultError(res, { message: "Error: 'cargo' needs be either 'FUNCIONARIO' and 'CLIENTE'" });
   }
 
-  db.registrarUsuario(user, function(result) {
+  db.registrarUsuario(authentication, function(result) {
     if (!(result instanceof Error)) {
-      return response.sendSuccess(res, { message: "User registered" });
+      auth.issueToken(authentication, function(result) {
+        if (!(result instanceof Error)) {
+          return response.sendSuccess(res, { token: result.token, cargo: result.cargo });
+        } else {
+          return response.sendResponse(res, 403, { message: result.message });
+        }
+      });
+      //return response.sendSuccess(res, { message: "User registered" });
     } else {
       return response.sendDefaultError(res, { message: result.message });
     }
