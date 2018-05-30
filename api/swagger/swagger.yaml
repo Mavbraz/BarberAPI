@@ -31,28 +31,32 @@ consumes:
 produces:
   - application/json
 tags:
-  - name: Usuário
-    description: "Tudo sobre o usuário"
+  - name: Cliente
+    description: "Tudo sobre o cliente"
+  - name: Funcionário
+    description: "Tudo sobre o funcionário"
   - name: Serviço
     description: "Tudo sobre o serviço"
+  - name: Agendamento
+    description: "Tudo sobre o agendamento"
 paths:
   /usuario/registrar/funcionario:
     x-swagger-router-controller: usuario.controller
     post:
-      operationId: registerPost
+      operationId: registrarUsuario
       description: "Registra um funcionario"
       security:
         - Bearer: []
       x-security-scopes:
         - funcionario
       tags:
-        - Usuário
+        - Funcionário
       parameters:
-        - name: authentication
+        - name: registration
           in: body
           required: true
           schema:
-            $ref: "#/definitions/Authentication"
+            $ref: "#/definitions/User"
       responses:
         "200":
           description: "Success"
@@ -69,16 +73,16 @@ paths:
   /usuario/registrar/cliente:
     x-swagger-router-controller: usuario.controller
     post:
-      operationId: registerPost
+      operationId: registrarUsuario
       description: "Registra um cliente"
       tags:
-        - Usuário
+        - Cliente
       parameters:
-        - name: authentication
+        - name: registration
           in: body
           required: true
           schema:
-            $ref: "#/definitions/Authentication"
+            $ref: "#/definitions/User"
       responses:
         "200":
           description: "Success"
@@ -95,10 +99,11 @@ paths:
   /usuario/login:
     x-swagger-router-controller: usuario.controller
     post:
-      operationId: loginPost
+      operationId: loginUsuario
       description: "Loga com um usuário"
       tags:
-        - Usuário
+        - Cliente
+        - Funcionário
       parameters:
         - name: authentication
           in: body
@@ -118,28 +123,54 @@ paths:
           description: "Access Denied"
           schema:
             $ref: "#/definitions/Error"
-  /usuario/{id}:
+  /usuario/login/cliente:
+    x-swagger-router-controller: usuario.controller
+    post:
+      operationId: loginUsuario
+      description: "Loga com um usuário"
+      tags:
+        - Cliente
+      parameters:
+        - name: authentication
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/Authentication"
+      responses:
+        "200":
+          description: "Success"
+          schema:
+            $ref: "#/definitions/Login"
+        "400":
+          description: "Default Error"
+          schema:
+            $ref: "#/definitions/Error"
+        "403":
+          description: "Access Denied"
+          schema:
+            $ref: "#/definitions/Error"
+  /usuario/{email}:
     x-swagger-router-controller: usuario.controller
     put:
-      operationId: usuarioIdPut
+      operationId: atualizarUsuario
       description: "Atualiza informações de um usuário"
       security:
         - Bearer: []
       x-security-scopes:
         - funcionario
       tags:
-        - Usuário
+        - Funcionário
       parameters:
         - in: path
-          name: id
-          type: integer
+          name: email
+          type: string
           required: true
-          description: "Id do usuário"
-        - name: user
+          description: "Email do usuário"
+        - name: updateUser
           in: body
           required: true
           schema:
-            $ref: "#/definitions/User"
+            $ref: "#/definitions/UpdateUser"
       responses:
         "200":
           description: "Success"
@@ -154,20 +185,20 @@ paths:
           schema:
             $ref: "#/definitions/Error"
     delete:
-      operationId: usuarioIdDelete
-      description: "Remove um usuário"
+      operationId: bloquearUsuario
+      description: "Bloquear um usuário"
       security:
         - Bearer: []
       x-security-scopes:
         - funcionario
       tags:
-        - Usuário
+        - Funcionário
       parameters:
         - in: path
-          name: id
-          type: integer
+          name: email
+          type: string
           required: true
-          description: "Id do usuário"
+          description: "Email do usuário"
       responses:
         "200":
           description: "Success"
@@ -181,23 +212,53 @@ paths:
           description: "Access Denied"
           schema:
             $ref: "#/definitions/Error"
-  /usuario/{id}/unlock:
+  /usuario/{email}/unlock:
     x-swagger-router-controller: usuario.controller
     put:
-      operationId: usuarioIdUnlockPut
-      description: "Desbloqueia um usuário"
+      operationId: desbloquearUsuario
+      description: "Desbloquear um usuário"
       security:
         - Bearer: []
       x-security-scopes:
         - funcionario
       tags:
-        - Usuário
+        - Funcionário
       parameters:
         - in: path
-          name: id
-          type: integer
+          name: email
+          type: string
           required: true
-          description: "Id do usuário"
+          description: "Email do usuário"
+      responses:
+        "200":
+          description: "Success"
+          schema:
+            $ref: "#/definitions/Success"
+        "400":
+          description: "Default Error"
+          schema:
+            $ref: "#/definitions/Error"
+        "403":
+          description: "Access Denied"
+          schema:
+            $ref: "#/definitions/Error"
+  /usuario:
+    x-swagger-router-controller: usuario.controller
+    put:
+      operationId: atualizarUsuario
+      description: "Atualiza informações do seu usuário"
+      security:
+        - Bearer: []
+      x-security-scopes:
+        - cliente
+      tags:
+        - Cliente
+      parameters:
+        - name: user
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/UpdateUser"
       responses:
         "200":
           description: "Success"
@@ -214,7 +275,7 @@ paths:
   /servico:
     x-swagger-router-controller: servico.controller
     get:
-      operationId: servicoGet
+      operationId: visualizarServicos
       description: "Visualiza todos os serviços"
       security:
         - Bearer: []
@@ -237,7 +298,7 @@ paths:
           schema:
             $ref: "#/definitions/Error"
     post:
-      operationId: servicoPost
+      operationId: criarServico
       description: "Cria um serviço"
       security:
         - Bearer: []
@@ -267,7 +328,7 @@ paths:
   /servico/{id}:
     x-swagger-router-controller: servico.controller
     get:
-      operationId: servicoIdGet
+      operationId: visualizarServico
       description: "Visualiza informações de um serviço"
       security:
         - Bearer: []
@@ -296,7 +357,7 @@ paths:
           schema:
             $ref: "#/definitions/Error"
     put:
-      operationId: servicoIdPut
+      operationId: atualizarServico
       description: "Atualiza informações de um serviço"
       security:
         - Bearer: []
@@ -329,7 +390,7 @@ paths:
           schema:
             $ref: "#/definitions/Error"
     delete:
-      operationId: servicoIdDelete
+      operationId: bloquearServico
       description: "Remove um serviço"
       security:
         - Bearer: []
@@ -359,7 +420,7 @@ paths:
   /servico/{id}/unlock:
     x-swagger-router-controller: servico.controller
     put:
-      operationId: servicoIdUnlockPut
+      operationId: desbloquearServico
       description: "Desbloqueia um serviço"
       security:
         - Bearer: []
@@ -386,6 +447,119 @@ paths:
           description: "Access Denied"
           schema:
             $ref: "#/definitions/Error"
+  /agendamento:
+    x-swagger-router-controller: agendamento.controller
+    get:
+      operationId: visualizarAgendamentos
+      description: "Visualiza todos os agendamento"
+      security:
+        - Bearer: []
+      x-security-scopes:
+        - funcionario
+      tags:
+        - Agendamento
+      responses:
+        "200":
+          description: "Success"
+          schema:
+            $ref: "#/definitions/AllSchedules"
+        "400":
+          description: "Default Error"
+          schema:
+            $ref: "#/definitions/Error"
+        "403":
+          description: "Access Denied"
+          schema:
+            $ref: "#/definitions/Error"
+  /agendamento/{id}:
+    x-swagger-router-controller: agendamento.controller
+    put:
+      operationId: atualizarAgendamento
+      description: "Atualiza um agendamento"
+      security:
+        - Bearer: []
+      x-security-scopes:
+        - funcionario
+      tags:
+        - Agendamento
+      parameters:
+        - in: path
+          name: id
+          type: integer
+          required: true
+          description: "Id do agendamento"
+        - name: schedule
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/UpdateSchedule"
+      responses:
+        "200":
+          description: "Success"
+          schema:
+            $ref: "#/definitions/Success"
+        "400":
+          description: "Default Error"
+          schema:
+            $ref: "#/definitions/Error"
+        "403":
+          description: "Access Denied"
+          schema:
+            $ref: "#/definitions/Error"
+  /agendamento/cliente:
+    x-swagger-router-controller: agendamento.controller
+    get:
+      operationId: visualizarAgendamentosCliente
+      description: "Visualiza todos os agendamentos de um cliente"
+      security:
+        - Bearer: []
+      x-security-scopes:
+        - cliente
+      tags:
+        - Cliente
+        - Agendamento
+      responses:
+        "200":
+          description: "Success"
+          schema:
+            $ref: "#/definitions/AllSchedules"
+        "400":
+          description: "Default Error"
+          schema:
+            $ref: "#/definitions/Error"
+        "403":
+          description: "Access Denied"
+          schema:
+            $ref: "#/definitions/Error"
+    post:
+      operationId: solicitarAgendamento
+      description: "Solicita um agendamento"
+      security:
+        - Bearer: []
+      x-security-scopes:
+        - cliente
+      tags:
+        - Cliente
+        - Agendamento
+      parameters:
+        - name: schedule
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/Schedule"
+      responses:
+        "200":
+          description: "Success"
+          schema:
+            $ref: "#/definitions/Success"
+        "400":
+          description: "Default Error"
+          schema:
+            $ref: "#/definitions/Error"
+        "403":
+          description: "Access Denied"
+          schema:
+            $ref: "#/definitions/Error"
 definitions:
   Authentication:
     type: object
@@ -393,20 +567,35 @@ definitions:
       email:
         type: string
         format: email
-        example: "email"
+        example: "email@example.com"
       senha:
         type: string
-        example: "password"
+        example: "password123"
+  UpdateUser:
+    type: object
+    properties:
+      nome:
+        type: string
+        example: "Nome"
+      senha:
+        type: string
+        example: "password123"
   User:
     type: object
     properties:
+      nome:
+        type: string
+        example: "Nome"
+      cpf:
+        type: string
+        example: "111111111"
       email:
         type: string
         format: email
-        example: "email"
+        example: "email@example.com"
       senha:
         type: string
-        example: "password"
+        example: "password123"
       cargo:
         type: string
         example: "FUNCIONARIO"
@@ -420,9 +609,50 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/Service'
+  AllSchedules:
+    type: object
+    properties:
+      total:
+        type: integer
+        example: 1
+      agendamentos:
+        type: array
+        items:
+          $ref: '#/definitions/Schedule'
+  UpdateSchedule:
+    type: object
+    properties:
+      situacao:
+        type: string
+        example: "MARCADO"
+      pagamento:
+        type: string
+        example: "PENDENTE"
+  Schedule:
+    type: object
+    properties:
+      horario:
+        type: string
+        example: "1527568589"
+      situacao:
+        type: string
+        example: "MARCADO"
+      pagamento:
+        type: string
+        example: "PENDENTE"
+      servicos:
+        type: array
+        items:
+          $ref: '#/definitions/Service'
+      cliente:
+        type: string
+        example: "email@example.com"
   Service:
     type: object
     properties:
+      id:
+        type: string
+        example: "1"
       descricao:
         type: string
         example: "Corte de Cabelo"

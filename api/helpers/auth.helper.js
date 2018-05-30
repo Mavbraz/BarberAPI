@@ -65,9 +65,13 @@ function verifyToken(req, authOrSecDef, token, callback) {
   }
 };
 
-function issueToken(authentication, callback) {
+function issueToken(authentication, isCliente, callback) {
   db.loginUsuario(authentication, function(result_login) {
     if (!(result_login instanceof Error) && result_login.email === authentication.email.toLowerCase() && result_login.senha === authentication.senha.toUpperCase()) {
+      if (isCliente && result_login.cargo != "CLIENTE") {
+        return callback(new Error("Error: Access Denied"));
+      }
+
       const token = jwt.sign(
         {
           sub: result_login.email,

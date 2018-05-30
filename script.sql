@@ -5,6 +5,8 @@ USE barber;
 
 CREATE TABLE usuario (
     id INT NOT NULL AUTO_INCREMENT,
+    nome VARCHAR(255) NOT NULL,
+    cpf CHAR(11) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
     senha CHAR(64) NOT NULL,
     salt  CHAR(96) NOT NULL,
@@ -17,28 +19,30 @@ CREATE TABLE usuario (
 
 CREATE TABLE servico (
     id INT NOT NULL AUTO_INCREMENT,
+    nome VARCHAR(50) NOT NULL,
     descricao VARCHAR(255) NOT NULL,
     valor DECIMAL(15,2) NOT NULL,
     blocked BOOLEAN NOT NULL DEFAULT FALSE,
     PRIMARY KEY(id)
 );
 
-CREATE TABLE compra (
+CREATE TABLE agendamento (
     id INT NOT NULL AUTO_INCREMENT,
     usuario_id INT NOT NULL,
-    estado VARCHAR(30) NOT NULL DEFAULT 'MARCADO',
+    horario VARCHAR(10) NOT NULL,
+    situacao VARCHAR(30) NOT NULL DEFAULT 'MARCADO',
     pagamento VARCHAR(30) NOT NULL DEFAULT 'PENDENTE',
     PRIMARY KEY(id),
     FOREIGN KEY(usuario_id) REFERENCES usuario(id),
-    CHECK (estado = 'MARCADO' OR estado = 'REALIZADO' OR estado = 'CANCELADO'),
+    CHECK (situacao = 'MARCADO' OR situacao = 'REALIZADO' OR situacao = 'CANCELADO'),
     CHECK (pagamento = 'PENDENTE' OR pagamento = 'REALIZADO')
 );
 
-CREATE TABLE compra_servico (
-    compra_id INT NOT NULL,
+CREATE TABLE agendamento_servico (
+    agendamento_id INT NOT NULL,
     servico_id INT NOT NULL,
-    PRIMARY KEY(compra_id, servico_id),
-    FOREIGN KEY(compra_id) REFERENCES compra(id),
+    PRIMARY KEY(agendamento_id, servico_id),
+    FOREIGN KEY(agendamento_id) REFERENCES agendamento(id),
     FOREIGN KEY(servico_id) REFERENCES servico(id)
 );
 
@@ -48,21 +52,23 @@ SET NEW.email = LOWER(NEW.email), NEW.senha = UPPER(NEW.senha), NEW.salt = UPPER
 CREATE TRIGGER ucase_update BEFORE UPDATE ON usuario FOR EACH ROW
 SET NEW.email = LOWER(NEW.email), NEW.senha = UPPER(NEW.senha), NEW.salt = UPPER(NEW.salt);
 
-CREATE TRIGGER ccase_insert BEFORE INSERT ON compra FOR EACH ROW
-SET NEW.estado = UPPER(NEW.estado), NEW.pagamento = UPPER(NEW.pagamento);
+CREATE TRIGGER ccase_insert BEFORE INSERT ON agendamento FOR EACH ROW
+SET NEW.situacao = UPPER(NEW.situacao), NEW.pagamento = UPPER(NEW.pagamento);
 
-CREATE TRIGGER ccase_update BEFORE UPDATE ON compra FOR EACH ROW
-SET NEW.estado = UPPER(NEW.estado), NEW.pagamento = UPPER(NEW.pagamento);
+CREATE TRIGGER ccase_update BEFORE UPDATE ON agendamento FOR EACH ROW
+SET NEW.situacao = UPPER(NEW.situacao), NEW.pagamento = UPPER(NEW.pagamento);
 
-INSERT INTO usuario (email, senha, salt, cargo)
-VALUES ('admin@barbershop.com',
+INSERT INTO usuario (nome, cpf, email, senha, salt, cargo)
+VALUES ('Admin',
+        '00000000000',
+        'admin@barbershop.com',
         '8C6976E5B5410415BDE908BD4DEE15DFB167A9C873FC4BB8A81F6F2AB448A918',
         '9FCD52BABCE64865C7FF54FEE0B2F85E27E2EFF3F2C4D6FE8A22442FBE64B80B5F54B3EEEE6CD327C899EBD558FE3635',
         'FUNCIONARIO');
         
-INSERT INTO servico (descricao, valor)
-VALUES  ("Corte de Cabelo", 20.00),
-        ("Hidratacao", 30.00);
+INSERT INTO servico (nome, descricao, valor)
+VALUES  ('Corte de Cabelo', 'Corte seu cabelo como em nenhum outro lugar', 20.00),
+        ('Hidratação', 'Hidrate seu cabelo como em nenhum outro lugar', 15.00);
         
 -- INSERT INTO servico (descricao, valor)
 -- VALUES  ("Corte de Cabelo", 20.00),
