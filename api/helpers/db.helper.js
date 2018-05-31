@@ -8,6 +8,7 @@ module.exports = {
     registrarUsuario: registrarUsuario,
     loginUsuario: loginUsuario,
     getUsuarioId: getUsuarioId,
+    visualizarUsuario: visualizarUsuario,
     atualizarUsuario: atualizarUsuario,
     removerUsuario: removerUsuario,
     desbloquearUsuario: desbloquearUsuario,
@@ -79,7 +80,27 @@ function getUsuarioId(email, callback) {
         if (err) {
             callback(err);
         } else {
-            callback(res[0]);
+            if (res.length > 0) {
+                callback(res[0]);
+            } else {
+                callback(new Error("Error: Credentials incorrect"));
+            }
+        }
+    });
+    endConnection(con);
+}
+
+function visualizarUsuario(email, callback) {
+    const con = createConnection();
+    con.query('SELECT nome, cpf, email, cargo FROM usuario WHERE email = ?', [email], (err, res) => {
+        if (err) {
+            callback(err);
+        } else {
+            if (res.length > 0) {
+                callback(res[0]);
+            } else {
+                callback(new Error("Error: Credentials incorrect"));
+            }
         }
     });
     endConnection(con);
@@ -87,7 +108,11 @@ function getUsuarioId(email, callback) {
 
 function atualizarUsuario(user, callback) {
     const con = createConnection();
-    con.query('UPDATE usuario SET ? WHERE email = ? WHERE blocked = FALSE', [{ nome: user.nome, senha: user.senha }, user.email], (err, res) => {
+    var save = { nome: user.nome };
+    if (user.senha !== undefined) {
+        save.senha = user.senha;
+    }
+    con.query('UPDATE usuario SET ? WHERE email = ? AND blocked = FALSE', [save, user.email], (err, res) => {
         if (err) {
             callback(err);
         } else {

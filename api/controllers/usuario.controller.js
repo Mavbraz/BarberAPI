@@ -7,6 +7,7 @@ const response = require("../helpers/response.helper");
 module.exports = {
     registrarUsuario: registrarUsuario,
     loginUsuario: loginUsuario,
+    visualizarUsuario: visualizarUsuario,
     atualizarUsuario: atualizarUsuario,
     bloquearUsuario: bloquearUsuario,
     desbloquearUsuario: desbloquearUsuario
@@ -65,20 +66,30 @@ function loginUsuario(req, res, next) {
     });
 };
 
+function visualizarUsuario(req, res, next) {
+    db.visualizarUsuario(req.auth.sub, function (result) {
+        if (!(result instanceof Error)) {
+            return response.sendSuccess(res, result);
+        } else {
+            return response.sendDefaultError(res, { message: result.message });
+        }
+    });
+}
+
 function atualizarUsuario(req, res, next) {
     var updateUser = req.swagger.params['updateUser'].value;
 
     if (req.swagger.apiPath === "/usuario") {
-        user.email = req.auth.sub;
+        updateUser.email = req.auth.sub;
     } else {
-        user.email = req.swagger.params['email'].value;
+        updateUser.email = req.swagger.params['email'].value;
     }
 
-    if (updateUser.email === undefined || updateUser.nome === undefined || user.senha === undefined) {
-        return response.sendDefaultError(res, { message: "Error: 'email', 'nome' and 'senha' are required" });
+    if (updateUser.email === undefined || updateUser.nome === undefined) {
+        return response.sendDefaultError(res, { message: "Error: 'email' and 'nome' are required" });
     }
 
-    db.atualizarUsuario(user, function (result) {
+    db.atualizarUsuario(updateUser, function (result) {
         if (!(result instanceof Error)) {
             if (result.affectedRows > 0) {
                 return response.sendSuccess(res, { message: "User updated" });

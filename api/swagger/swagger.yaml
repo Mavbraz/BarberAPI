@@ -244,17 +244,43 @@ paths:
             $ref: "#/definitions/Error"
   /usuario:
     x-swagger-router-controller: usuario.controller
+    get:
+      operationId: visualizarUsuario
+      description: "Visualiza informações do seu usuário"
+      security:
+        - Bearer: []
+      x-security-scopes:
+        - funcionario
+        - cliente
+      tags:
+        - Funcionário
+        - Cliente
+      responses:
+        "200":
+          description: "Success"
+          schema:
+            $ref: "#/definitions/User"
+        "400":
+          description: "Default Error"
+          schema:
+            $ref: "#/definitions/Error"
+        "403":
+          description: "Access Denied"
+          schema:
+            $ref: "#/definitions/Error"
     put:
       operationId: atualizarUsuario
       description: "Atualiza informações do seu usuário"
       security:
         - Bearer: []
       x-security-scopes:
+        - funcionario
         - cliente
       tags:
+        - Funcionário
         - Cliente
       parameters:
-        - name: user
+        - name: updateUser
           in: body
           required: true
           schema:
