@@ -224,7 +224,7 @@ function desbloquearServico(id, callback) {
 
 function visualizarAgendamentos(callback) {
     const con = createConnection();
-    con.query('SELECT agendamento.id, agendamento.horario, agendamento.situacao, agendamento.pagamento, usuario.email as usuario_id, servico.id as servico_id, servico.nome as servico_nome, servico.descricao as servico_descricao, servico.valor as servico_valor FROM agendamento ' +
+    con.query('SELECT agendamento.id, agendamento.horario, agendamento.situacao, agendamento.pagamento, usuario.id as usuario_id, servico.id as servico_id, servico.nome as servico_nome, servico.descricao as servico_descricao, servico.valor as servico_valor FROM agendamento ' +
     'INNER JOIN agendamento_servico ON agendamento_servico.agendamento_id = agendamento.id ' +
     'INNER JOIN usuario ON usuario.id = agendamento.usuario_id ' +
     'INNER JOIN servico ON servico.id = agendamento_servico.servico_id', [], (err, res) => {
