@@ -57,12 +57,6 @@ function solicitarAgendamento(req, res, next) {
     if (schedule.cliente === undefined || schedule.horario === undefined || schedule.servicos === undefined) {
         return response.sendDefaultError(res, { message: "Error: 'client', 'horario' and 'servicos' are required" });
     }
-
-    try {
-        schedule.servicos = JSON.parse(schedule.servicos);
-    }  catch (error) {
-        return response.sendDefaultError(res, { message: "Error: 'servicos' need be a json array of services" });
-    }
     
     if (schedule.servicos.length <= 0) {
         return response.sendDefaultError(res, { message: "Error: 'servicos' must have values" });
@@ -79,7 +73,7 @@ function solicitarAgendamento(req, res, next) {
             db.solicitarAgendamento(schedule, function (result_agendamento) {
                 if (!(result_agendamento instanceof Error)) {
                     const servicos = schedule.servicos.map(element => {
-                        return [result_agendamento.insertId, element]
+                        return [result_agendamento.insertId, element.id]
                     });
 
                     db.solicitarServicos(servicos, function (result_servicos) {
