@@ -78,7 +78,7 @@ function solicitarAgendamento(req, res, next) {
 
                     db.solicitarServicos(servicos, function (result_servicos) {
                         if (!(result_servicos instanceof Error)) {
-                            return response.sendSuccess(res, { message: "Schedule created successfully" });
+                            return response.sendSuccess(res, { id: result_servicos.insertId });
                         } else {
                             return response.sendDefaultError(res, { message: "Error: Service cant be requested" });
                         }
